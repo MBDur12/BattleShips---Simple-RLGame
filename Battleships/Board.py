@@ -32,7 +32,6 @@ class Board():
 
         return True
         
-
     def place_ship(self, length, name):
         if length <= 0:
             print("Invalid Length")
@@ -46,7 +45,6 @@ class Board():
             y = randint(0, self.width)
 
         self.ships[name] = [[x,y]]
-        
         x_or_y = randint(0,1)
         for i in range(1, length):
             if x_or_y == 0:
@@ -59,13 +57,36 @@ class Board():
                     self.ships[name].append([x,y-1])
                 else:
                     self.ships[name].append([x,y+1])
+    
+    # Changes values in self.board depending on if a position is hit or not - reveals information.
+    def hit(self, pos):
+        for k,v in self.ships.items():
+            if pos in v:
+                v.remove(pos)
+                self.board[pos[0], pos[1]] = 1
+                print("Hit!") 
+                if not v:
+                    self.ships.pop(k, None)
+                    print("Ship Sunk!")
+                    return "Sunk"
+
+                return "Hit"
         
+        print("Miss!")
+        self.board[pos[0], pos[1]] = -1
+        return "Miss"
+
+        
+
 
         
 
 
 
 b = Board(5)
-b.place_ship(2, "a")
-b.place_ship(3, "b")
+
+b.ships["a"] = [[0,1], [1,1]]
 print(b.ships)
+b.hit([0,1])
+b.hit([1,1])
+print(b.board)
