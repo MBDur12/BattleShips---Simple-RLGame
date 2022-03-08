@@ -99,10 +99,10 @@ class Board():
     
     # Changes values in self.board depending on if a position is hit or not - reveals information.
     def _check_sunk(self, ship):
-        if not ship:
+        if not self._ships[ship]:
             self._ships.pop(ship, None)
-        
-        return True
+            return True
+        return False
 
     def _check_hit(self, ship, coords, pos):
         if pos in coords:
@@ -118,17 +118,10 @@ class Board():
             
                 if self._check_sunk(k):
                     print("Ship Sunk!")
-            else:
-                self.board[pos[0], pos[1]] = -1
-                print("Miss!")
+                return
+        self.board[pos[0], pos[1]] = -1
+        print("Miss!")
 
 
-
-
-b = Board(5)
-
-b.place_ship("carrier", 2)
-b.place_ship("destroyer", 3)
-print(b._ships)
 
 
