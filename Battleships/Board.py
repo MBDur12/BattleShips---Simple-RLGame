@@ -24,6 +24,10 @@ class Board():
             print("")
         print("-" * (4 * self.width + 1))
 
+    def reset(self):
+        self.board = np.zeros((self.width, self.width), dtype=int)
+        self._ships = {}
+
     # Check if a given position is not already occuped and is a valid placement (i.e., within bounds)
     def _valid_position(self, pos):
         for coords in self._ships.values():
@@ -114,14 +118,10 @@ class Board():
     def hit(self, pos):
         for k,v in self._ships.items():
             if self._check_hit(k, v, pos):
-                print("Hit!")
+                #print("Hit!")
             
                 if self._check_sunk(k):
-                    print("Ship Sunk!")
+                    print("Ship Sunk!", end="\r")
                 return
         self.board[pos[0], pos[1]] = -1
-        print("Miss!")
-
-
-
-
+        #print("Miss!")
