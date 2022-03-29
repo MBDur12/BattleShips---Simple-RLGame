@@ -95,10 +95,7 @@ class Board():
         
         self._ships[ship_name] = set_pos
 
-        
-        """
-        How can I handle a failure? Really, how can I make it run until it can validly place the ship?
-        """
+       
 
     
     # Changes values in self.board depending on if a position is hit or not - reveals information.
@@ -116,12 +113,21 @@ class Board():
         
 
     def hit(self, pos):
-        for k,v in self._ships.items():
-            if self._check_hit(k, v, pos):
+        if self.board[pos[0], pos[1]] != 0:
+            return
+        else:
+            for k,v in self._ships.items():
+                if self._check_hit(k, v, pos):
                 #print("Hit!")
             
-                if self._check_sunk(k):
-                    print("Ship Sunk!", end="\r")
-                return
-        self.board[pos[0], pos[1]] = -1
+                    if self._check_sunk(k):
+                        print("Ship Sunk!", end="\r")
+                    return
+            self.board[pos[0], pos[1]] = -1
+
+
+
+
+
+        
         #print("Miss!")
