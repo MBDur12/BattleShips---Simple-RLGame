@@ -7,6 +7,8 @@ import random
 import os
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3 import DQN
+from stable_baselines3.common.evaluation import evaluate_policy
+
 
 class BattleShipsEnv(Env):
     def __init__(self, board_size=10, fleet={}):
@@ -64,8 +66,8 @@ class BattleShipsEnv(Env):
 
     def render(self):
         # To Do - maybe in pygame or printing in place.
-        print("", end="\r")
-        self.board.display()
+        #self.board.display()
+        pass
 
     def reset(self):
         self.board = bd.Board(self.board_size)
@@ -101,3 +103,8 @@ print(f"Scores for each: {scores}")"""
 
 
 log_path = os.path.join("Trainings", "Logs")
+model = DQN("MlpPolicy", env, verbose=1, tensorboard_log=log_path)
+model.learn(total_timesteps=100000)
+
+# Evaluate
+#evaluate_policy(model, env, n_eval_episodes=10, render=True)
