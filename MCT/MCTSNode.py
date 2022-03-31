@@ -1,19 +1,26 @@
 import numpy as np
 from collections import defaultdict
 from abc import ABC, abstractmethod
+import copy
 
 class BattleshipsMonteCarloTreeSearchNode():
 
     def __init__(self, state, parent=None):
-        super().__init__(state, parent)
+        self.state = copy.deepcopy(state)
+        self.parent = parent
+        self.children = []
         self._number_of_visits = 0.
-        self._results = defaultdict(int)
-        self._untried_actions = None
+        self._results = {}
+        self._untried_actions = []
 
     @property
     def untried_actions(self):
-        if self._untried_actions is None:
-            self._untried_actions = self.state.get_legal_actions()
+        if not self._untried_actions:
+            # generate list of possible moves as tuples
+            for index, x in np.ndenumerate(self.state.board):
+                if x == 0:
+                    self.untried_actions.append(index)
+
         return self._untried_actions
 
     @property
@@ -41,10 +48,13 @@ class BattleshipsMonteCarloTreeSearchNode():
     def rollout(self):
         current_rollout_state = self.state
         while not current_rollout_state.is_game_over():
-            possible_moves = current_rollout_state.get_legal_actions()
+            possible_moves = self.untried_actions()
             action = self.rollout_policy(possible_moves)
             current_rollout_state = current_rollout_state.move(action)
         return current_rollout_state.game_result
+    
+    def rollout_policy(self, possible_moves):
+        return possible_moves[np.random.randint(len(possible_moves))]
 
     def backpropagate(self, result):
         self._number_of_visits += 1.
