@@ -104,7 +104,9 @@ print(f"Scores for each: {scores}")"""
 
 log_path = os.path.join("Trainings", "Logs")
 model = DQN("MlpPolicy", env, verbose=1, tensorboard_log=log_path)
-model.learn(total_timesteps=100000)
+model.learn(total_timesteps=200000)
 
+save_path = os.path.join("Trainings", "Saved Models", "Battleships_DQN")
+model.save(save_path)
 # Evaluate
 #evaluate_policy(model, env, n_eval_episodes=10, render=True)
