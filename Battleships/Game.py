@@ -1,23 +1,18 @@
 import Board
 
-def main():
-    # initialise the game objects
-    board = Board.Board(5)
-    board.place_ship("carrier", 2)
-    board.place_ship("destroyer", 3)
-    board.display()
-    # main game loop
-    while board._ships:
-        print(board._ships)
-        # display board
+class Game():
+    def __init__(self, own_board, opp_board):
+        self.own_board = own_board
+        self.opp_board = opp_board
         
-        # input guess
-        guess = input("Enter a coordinate (e.g. 0 1): ").split(" ")
-        guess = tuple(map(lambda x: int(x), guess))
-        print(guess)
-        board.hit(guess)
-        board.display()
 
-if __name__ == '__main__':
-    main()
+    def step(self, coords):
+        # Take a shot at the opponent's board
+        self.opp_board.hit(coords)
+        # return the state of the opp's board and whether the game is over
+        done = self.opp_board.is_game_over()
+        return self.opp_board, done
+
+
+        
 
