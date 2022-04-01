@@ -10,7 +10,7 @@ class BattleshipsMonteCarloTreeSearchNode():
         self.parent = parent
         self.children = []
         self._number_of_visits = 0.
-        self._results = {}
+        self._results = 0.
         self._untried_actions = []
 
     @property
@@ -25,13 +25,23 @@ class BattleshipsMonteCarloTreeSearchNode():
 
     @property
     def q(self):
-        wins = self._results[self.parent.state.next_to_move]
-        loses = self._results[-1 * self.parent.state.next_to_move]
-        return wins - loses
+        return self._results
 
     @property
     def n(self):
         return self._number_of_visits
+
+    def uct(self):
+        return self._results / self._number_of_visits
+
+    def best_child(self, c_param=0.):
+        best_child = self.children[0]
+
+        for child in self.children:
+            if child.uct() > best_child.uct():
+                best_child = child
+
+        return best_child
 
     def expand(self):
         action = self.untried_actions.pop()
@@ -47,17 +57,20 @@ class BattleshipsMonteCarloTreeSearchNode():
 
     def rollout(self):
         current_rollout_state = self.state
+        hit_count = 0.
         while not current_rollout_state.is_game_over():
             possible_moves = self.untried_actions()
             action = self.rollout_policy(possible_moves)
-            current_rollout_state = current_rollout_state.move(action)
-        return current_rollout_state.game_result
+            current_rollout_state, result = current_rollout_state.move(action)
+            if result == True:
+                hit_count += 1
+        return hit_count
     
     def rollout_policy(self, possible_moves):
         return possible_moves[np.random.randint(len(possible_moves))]
 
     def backpropagate(self, result):
         self._number_of_visits += 1.
-        self._results[result] += 1.
+        self._results += result
         if self.parent:
             self.parent.backpropagate(result)

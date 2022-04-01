@@ -126,9 +126,15 @@ class Board():
         self.board[pos[0], pos[1]] = -1
         #print("Miss!")
 
+    def get_result(self):
+        pass
+
     def move(self, action):
         self.hit(action)
-        return self.board
+        result = False
+        if self.board[action[0], action[1]] == 1:
+            result = True
+        return self.board, result
     
     def is_game_over(self):
         if not self._ships:
