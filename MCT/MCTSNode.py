@@ -5,8 +5,9 @@ import copy
 
 class BattleshipsMonteCarloTreeSearchNode():
 
-    def __init__(self, state, parent=None):
+    def __init__(self, state, action=None, parent=None):
         self.state = copy.deepcopy(state)
+        self.action = action
         self.parent = parent
         self.children = []
         self._number_of_visits = 0.
@@ -14,14 +15,14 @@ class BattleshipsMonteCarloTreeSearchNode():
         self._untried_actions = []
 
     @property
-    def untried_actions(self):
-        if not self._untried_actions:
+    def untried_actions(self, av_actions):
+        if not av_actions:
             # generate list of possible moves as tuples
             for index, x in np.ndenumerate(self.state.board):
                 if x == 0:
-                    self.untried_actions.append(index)
+                    av_actions.append(index)
 
-        return self._untried_actions
+        return av_actions
 
     @property
     def q(self):
@@ -47,13 +48,17 @@ class BattleshipsMonteCarloTreeSearchNode():
         action = self.untried_actions.pop()
         next_state = self.state.move(action)
         child_node = BattleshipsMonteCarloTreeSearchNode(
-            next_state, parent=self
+            next_state, action=action, parent=self
         )
         self.children.append(child_node)
         return child_node
 
     def is_terminal_node(self):
         return self.state.is_game_over()
+
+    def is_fully_expanded(self):
+        self._untried_actions = self.untried_actions(self._untried_actions)
+        return not self._untried_actions
 
     def rollout(self):
         current_rollout_state = self.state
