@@ -42,7 +42,8 @@ class BattleshipsMonteCarloTreeSearchNode():
 
     def expand(self):
         action = self._untried_actions.pop()
-        next_state = self.state.move(action)
+        # I think there is an error below: think about what next_state is meant to be and what move() returns
+        next_state, _ = self.state.move(action) 
         child_node = BattleshipsMonteCarloTreeSearchNode(
             next_state, action=action, parent=self
         )
