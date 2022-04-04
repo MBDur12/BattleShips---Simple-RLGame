@@ -1,6 +1,4 @@
 import numpy as np
-from collections import defaultdict
-from abc import ABC, abstractmethod
 import copy
 
 class BattleshipsMonteCarloTreeSearchNode():
@@ -12,23 +10,21 @@ class BattleshipsMonteCarloTreeSearchNode():
         self.children = []
         self._number_of_visits = 0.
         self._results = 0.
-        self._untried_actions = []
+        self._untried_actions = self.get_actions()
 
-    @property
-    def untried_actions(self, av_actions):
-        if not av_actions:
-            # generate list of possible moves as tuples
-            for index, x in np.ndenumerate(self.state.board):
-                if x == 0:
-                    av_actions.append(index)
+    def get_actions(self):
+        actions = []
+        for index, x in np.ndenumerate(self.state.board):
+            if x == 0:
+                actions.append(index)
+        
+        return actions
+        
 
-        return av_actions
-
-    @property
     def q(self):
         return self._results
 
-    @property
+
     def n(self):
         return self._number_of_visits
 
@@ -45,7 +41,7 @@ class BattleshipsMonteCarloTreeSearchNode():
         return best_child
 
     def expand(self):
-        action = self.untried_actions.pop()
+        action = self._untried_actions.pop()
         next_state = self.state.move(action)
         child_node = BattleshipsMonteCarloTreeSearchNode(
             next_state, action=action, parent=self
@@ -57,7 +53,7 @@ class BattleshipsMonteCarloTreeSearchNode():
         return self.state.is_game_over()
 
     def is_fully_expanded(self):
-        self._untried_actions = self.untried_actions(self._untried_actions)
+        # This logic seems fine: returns true if there are no untried actions left for the node.
         return not self._untried_actions
 
     def rollout(self):
