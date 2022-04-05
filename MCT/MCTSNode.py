@@ -41,7 +41,8 @@ class BattleshipsMonteCarloTreeSearchNode():
         return best_child
 
     def expand(self):
-        action = self._untried_actions.pop()
+        rand_index = np.random.randint(len(self._untried_actions))
+        action = self._untried_actions.pop(rand_index)
         # I think there is an error below: think about what next_state is meant to be and what move() returns
         next_state, _ = self.state.move(action) 
         child_node = BattleshipsMonteCarloTreeSearchNode(
@@ -57,16 +58,21 @@ class BattleshipsMonteCarloTreeSearchNode():
         # This logic seems fine: returns true if there are no untried actions left for the node.
         return not self._untried_actions
 
-    def rollout(self):
+    def rollout(self, move_limit=10):
         current_rollout_state = self.state
         hit_count = 0.
-        while not current_rollout_state.is_game_over():
-            possible_moves = self.untried_actions()
+        guess_count = 0.
+        while guess_count < move_limit:
+            guess_count += 1
+            if current_rollout_state.is_game_over():
+                break
+            possible_moves = self.get_actions()
             action = self.rollout_policy(possible_moves)
             current_rollout_state, result = current_rollout_state.move(action)
             if result == True:
                 hit_count += 1
-        return hit_count
+            
+        return hit_count / guess_count
     
     def rollout_policy(self, possible_moves):
         return possible_moves[np.random.randint(len(possible_moves))]

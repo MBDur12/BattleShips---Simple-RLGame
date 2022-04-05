@@ -15,7 +15,7 @@ def random_move(board):
 
     return guess
 
-def main():
+def run_game():
     # Setup game envs for computer and player
     comp_board = Board.Board(10)
     player_board = Board.Board(10)
@@ -45,18 +45,23 @@ def main():
     
     if comp_done:
         print("Computer lost")
+        return False
     else:
         print("Player lost")
+        return True
     
     
+def stats():
+    game_count = 10
+    win_count = 0
+    for game in range(game_count):
+        game_result = run_game()
+        if game_result == True:
+            win_count += 1
+    print(win_count, game_count)
 
-
-
-
-
-
-
-
+def main():
+    stats()
 
 if __name__ == "__main__":
     main()

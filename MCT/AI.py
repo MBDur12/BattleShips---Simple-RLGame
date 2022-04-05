@@ -11,7 +11,7 @@ class AI():
     def monte_carlo_search(self):
         node = MCTSNode.BattleshipsMonteCarloTreeSearchNode(self.env.opp_board)
         mcts = MCTS.MonteCarloTreeSearch(node)
-        best_child = mcts.best_action(simulations_number=5)
+        best_child = mcts.best_action(simulations_number=50, move_limit=100)
         return best_child
     
 

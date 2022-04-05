@@ -119,9 +119,7 @@ class Board():
         for k,v in self._ships.items():
             if self._check_hit(k, v, pos):
                 #print("Hit!")
-            
-                if self._check_sunk(k):
-                    print("Ship Sunk!", end="\r")
+                self._check_sunk(k)
                 return
         self.board[pos[0], pos[1]] = -1
         #print("Miss!")
@@ -134,7 +132,7 @@ class Board():
         result = False
         if self.board[action[0], action[1]] == 1:
             result = True
-        return self.board, result
+        return self, result
     
     def is_game_over(self):
         if not self._ships:
