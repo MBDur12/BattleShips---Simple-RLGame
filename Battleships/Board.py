@@ -9,6 +9,7 @@ class Board():
         self.board = np.zeros((width, width), dtype=int)
         # Store all positions occupied by ships
         self._ships = {}
+        self._ship_lengths = {}
     def display(self):
         for row in self.board:
             print("-" * (4 * self.width + 1))
@@ -93,6 +94,7 @@ class Board():
             if set_pos:
                 break
         
+        self._ship_lengths[ship_name] = ship_length
         self._ships[ship_name] = set_pos
 
         
