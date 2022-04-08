@@ -3,7 +3,7 @@ import sys
 sys.path.append("./Battleships")
 import Board
 
-def randomly_place_ship(state, ship_length):
+def randomly_guess_ship(state, ship_length):
     # Generate random, contiguous coordinates for the given ship length.
     valid = False
     while not valid:
@@ -29,17 +29,35 @@ def randomly_place_ship(state, ship_length):
 
         # Next check conditions of validiity: if a "miss" is included and if there is at least one undiscovered square.
         contains_undiscovered = False
+        guess_val = 0
         for coord in guessed_coords:
             if state.board[coord[0], coord[1]] == -1:
                 break
-            if state.board[coord[0], coord[1]] == 0:
+            elif state.board[coord[0], coord[1]] == 0:
                 contains_undiscovered = True
+            else:
+                guess_val += 1
+
 
         if contains_undiscovered:
             valid = True
         
-        
-        return guessed_coords
+        return guessed_coords, guess_val
+
+def simulation(state, guess_limit):
+    information_set = []
+    for _ in range(guess_limit):
+        # generate random ship and get its length
+        index = np.random.randint(0, len(state._ships))
+        ship_name = state._ships.keys[index]
+        ship_length = state._ship_lengths[ship_name]
+
+        # generate a guess for ship
+        guessed_coords, guess_val = randomly_guess_ship(state, ship_length)
+        print(guessed_coords, guess_val)
+
+        if guess_val > 0:
+            information_set
 
 
     

@@ -1,6 +1,4 @@
-import copy
-import MCTSNode
-import MCTS
+import SimTree
 
 class AI():
     def __init__(self, env, limit):
@@ -9,15 +7,12 @@ class AI():
 
     # This is where the MCTS is run by the AI, before it selects a move
     def monte_carlo_search(self):
-        node = MCTSNode.BattleshipsMonteCarloTreeSearchNode(self.env.opp_board)
-        mcts = MCTS.MonteCarloTreeSearch(node)
-        best_child = mcts.best_action(simulations_number=50, move_limit=100)
-        return best_child
-    
-
+        mcts = SimTree.BattleshipsMonteCarloTreeSearch(self.env.opp_board, guess_limit=self.limit)
+        best_action = mcts.best_action()
+        return best_action
 
     def move(self):
         # Make a move based on running the MCTS
-        best_child = self.monte_carlo_search()
-        return self.env.step(best_child.action)
+        best_action = self.monte_carlo_search()
+        return self.env.step(best_action)
     
