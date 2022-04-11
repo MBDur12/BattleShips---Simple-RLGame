@@ -4,6 +4,7 @@ import Game
 import Board
 from AI import AI
 from random import randint
+import time
 
 SHIPS = {"Patrol Boat": 2, "Submarine": 3, "Destroyer": 3, "Battleship": 4, "Carrier": 5}
 
@@ -15,7 +16,7 @@ def random_move(board):
 
     return guess
 
-def run_game(games_lost):
+def run_game():
     # Setup game envs for computer and player
     comp_board = Board.Board(10)
     player_board = Board.Board(10)
@@ -38,14 +39,13 @@ def run_game(games_lost):
         cmp_state, comp_done = player_env.step(random_move(player_env.opp_board))
 
     
-        #print("Player's board:")
-        #player_env.own_board.display()
-        #print("Computer's board:")
-        #comp_env.own_board.display()
+        print("Player's board:")
+        player_env.own_board.display()
+        print("Computer's board:")
+        comp_env.own_board.display()
     
     if comp_done:
         #print("Computer lost")
-        games_lost.append([player_board, comp_board])
         return False
     else:
         #print("Player lost")
@@ -58,19 +58,16 @@ def stats():
     """
     games_lost = []
 
-    game_count = 100
+    game_count = 1
     win_count = 0
     for game in range(game_count):
-        game_result = run_game(games_lost)
+        game_result = run_game()
+        time.sleep(2)
         if game_result == True:
             win_count += 1
     print(win_count, game_count)
     print(f"Games lost: {games_lost}")
-    for games in games_lost:
-        print("Player's Board:")
-        games[0].display()
-        print("Computer's Board:")
-        games[1].display()
+    
 
 def main():
     stats()

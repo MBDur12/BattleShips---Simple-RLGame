@@ -72,6 +72,7 @@ class BattleshipsMonteCarloTreeSearch():
                     if self.state.board[coord[0], coord[1]] == 0:
                         imperfect_board[coord[0], coord[1]] += guess_val
 
+        print(f"Imperfect Board: {imperfect_board}")
         return imperfect_board
 
     # run simulations, and choose best action
@@ -91,6 +92,6 @@ class BattleshipsMonteCarloTreeSearch():
         # get the best weighted action based on imperfect board
         best_action = np.unravel_index(imperfect_board.argmax(), imperfect_board.shape)
         #print(best_action)
-
+        print(f"Taking action {best_action}")
         return best_action
 
