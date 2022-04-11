@@ -60,7 +60,7 @@ class BattleshipsMonteCarloTreeSearch():
 
             # generate a guess for ship
             guessed_coords, guess_val = self.randomly_guess_ship(ship_length)
-            print(guessed_coords, guess_val)
+            #print(guessed_coords, guess_val)
 
             if guessed_coords in prev_guesses:
                 continue
@@ -86,11 +86,11 @@ class BattleshipsMonteCarloTreeSearch():
         
         # run the simulation
         imperfect_board = self.simulation(imperfect_board)
-        print(imperfect_board)
+        #print(imperfect_board)
 
         # get the best weighted action based on imperfect board
         best_action = np.unravel_index(imperfect_board.argmax(), imperfect_board.shape)
-        print(best_action)
+        #print(best_action)
 
         return best_action
 
