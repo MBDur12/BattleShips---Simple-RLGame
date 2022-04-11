@@ -9,6 +9,7 @@ class Board():
         self.board = np.zeros((width, width), dtype=int)
         # Store all positions occupied by ships
         self._ships = {}
+        self._ship_lengths = {}
     def display(self):
         for row in self.board:
             print("-" * (4 * self.width + 1))
@@ -93,6 +94,7 @@ class Board():
             if set_pos:
                 break
         
+        self._ship_lengths[ship_name] = ship_length
         self._ships[ship_name] = set_pos
 
         
@@ -119,9 +121,22 @@ class Board():
         for k,v in self._ships.items():
             if self._check_hit(k, v, pos):
                 #print("Hit!")
-            
-                if self._check_sunk(k):
-                    print("Ship Sunk!", end="\r")
+                self._check_sunk(k)
                 return
         self.board[pos[0], pos[1]] = -1
         #print("Miss!")
+
+    def get_result(self):
+        pass
+
+    def move(self, action):
+        self.hit(action)
+        result = False
+        if self.board[action[0], action[1]] == 1:
+            result = True
+        return self, result
+    
+    def is_game_over(self):
+        if not self._ships:
+            return True
+        return False
