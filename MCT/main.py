@@ -43,7 +43,7 @@ def run_game():
         player_env.own_board.display()
         print("Computer's board:")
         comp_env.own_board.display()
-    
+        time.sleep(1)
     if comp_done:
         #print("Computer lost")
         return False
@@ -62,7 +62,7 @@ def stats():
     win_count = 0
     for game in range(game_count):
         game_result = run_game()
-        time.sleep(2)
+        
         if game_result == True:
             win_count += 1
     print(win_count, game_count)
