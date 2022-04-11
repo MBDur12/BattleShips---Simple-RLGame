@@ -77,6 +77,7 @@ class BattleshipsMonteCarloTreeSearch():
 
     # run simulations, and choose best action
     def best_action(self):
+        untried_actions = []
         # initialise imperfect board state
         imperfect_board = np.zeros((self.state.width, self.state.width))
 
@@ -84,13 +85,20 @@ class BattleshipsMonteCarloTreeSearch():
         for index, val in np.ndenumerate(self.state.board):
             if val != 0:
                 imperfect_board[index[0], index[1]] = -1
+            else:
+                untried_actions.append(index)
         
         # run the simulation
         imperfect_board = self.simulation(imperfect_board)
         #print(imperfect_board)
 
         # get the best weighted action based on imperfect board
-        best_action = np.unravel_index(imperfect_board.argmax(), imperfect_board.shape)
+        best_index = np.unravel_index(imperfect_board.argmax(), imperfect_board.shape)
+
+        if self.state.board[best_index[0], best_index[1]] == 0:
+            best_action = untried_actions[np.random.randint(len(untried_actions))]
+        else:
+            best_action = best_index
         #print(best_action)
         print(f"Taking action {best_action}")
         return best_action
