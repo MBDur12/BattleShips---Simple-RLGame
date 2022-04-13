@@ -5,7 +5,7 @@ pygame.font.init()
 """
 DEFINE CONSTANTS and SETUP WINDOW
 """
-WIDTH, HEIGHT = 550, 600
+WIDTH, HEIGHT = 450, 500
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 FPS = 60
 SCORE_FONT = pygame.font.SysFont("comicsans", 20)
