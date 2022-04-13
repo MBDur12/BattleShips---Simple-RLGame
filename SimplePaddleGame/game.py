@@ -43,10 +43,13 @@ class PaddleGame():
 
         self.score = 0
 
+    def reset():
+        pass
     
     def _set_ball_pos(self):
         start_x, start_y = randint(0, WIDTH), randint(0, HEIGHT//4)
         return start_x, start_y
+
 
     
     def take_step(self):
@@ -114,7 +117,7 @@ class PaddleGame():
             return True
         return False
     
-    def reset(self):
+    def display_loss(self):
         game_over_text = GAMEOVER_FONT.render("Game Over", 1, WHITE)
         self.window.blit(game_over_text, 
         (WIDTH//2 - game_over_text.get_width()//2, 
@@ -135,7 +138,7 @@ def main():
         game_over, score = game.take_step()
 
         if game_over:
-            game.reset()
+            game.display_loss()
             break
 
     print(f"Score: {score}")
