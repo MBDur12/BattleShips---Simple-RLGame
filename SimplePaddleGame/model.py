@@ -12,9 +12,9 @@ class LinQNetwork(nn.Module):
         self.first_linear = nn.Linear(input_size, hidden_lyr_size)
         self.second_linear = nn.Linear(hidden_lyr_size, output_size)
 
-    def forward(self):
+    def forward(self, x):
         # simple forward propagation: Relu activation function after linearly transforming input layer, then a further L.T. to the output layer.
-        x = F.relu(self.first_linear)
+        x = F.relu(self.first_linear(x))
         x = self.second_linear(x)
 
         return x
@@ -62,6 +62,23 @@ class Trainer():
 
         # Make prediction based on the model
         prediction = self.model(state)
+
+        target = prediction.clone()
+
+        for idx in range(len(done)):
+            Q_new = reward[idx]
+            if not done[idx]:
+                Q_new = reward[idx] + self.disc_rate * torch.max(self.model(self.next_state))
+
+            target[idx][torch.argmax(self.action).item()] = Q_new
+
+        # resets all neuron gradients to zero, 
+        # calculates loss (mean squared error) and back propogates
+        self.optimiser.zero_grad()
+        loss = self.loss
+        loss.backward()
+
+        self.optimiser.step()
 
         
     
