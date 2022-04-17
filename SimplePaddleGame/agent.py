@@ -141,7 +141,7 @@ def train():
 
             if score > reward:
                 record = score
-                # agent.model.save()
+                agent.model.save()
 
             print(f"Game: {agent.game_count}, Score: {score}, Record: {record}")
 

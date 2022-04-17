@@ -37,6 +37,8 @@ class Trainer():
         # Define optimiziation algorithm: makes it far easier to adjust hyperparamters to reduce loss.
         # Updates the weights in the NN based on training data.
         self.optimiser = optim.Adam(model.parameters(), lr=self.lr)
+        # Mean squared error used to compute loss
+        self.loss = nn.MSELoss()
         
     def train_step(self, state, action, reward, next_state, done):
         # initialize all the parameters as tensors
@@ -44,6 +46,7 @@ class Trainer():
         self.next_state = torch.tensor(next_state, dtype=torch.float)
         self.action = torch.tensor(action, dtype=torch.long)
         self.reward = torch.tensor(reward, dtype=torch.float)
+        
 
 
         # Check size of training data (as it can be single or in a batch)
@@ -56,6 +59,11 @@ class Trainer():
             self.action = torch.unsqueeze(self.action, 0)
             self.reward = torch.unsqueeze(self.reward, 0)
             done = (done, )
-    
+
+        # Make prediction based on the model
+        prediction = self.model(state)
 
         
+    
+        
+
