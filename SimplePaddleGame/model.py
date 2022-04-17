@@ -1,6 +1,8 @@
+from re import S
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
 import os
 
 class LinQNetwork(nn.Module):
@@ -33,6 +35,27 @@ class Trainer():
         self.disc_rate = disc_rate
         self.model = model
         # Define optimiziation algorithm: makes it far easier to adjust hyperparamters to reduce loss.
+        # Updates the weights in the NN based on training data.
+        self.optimiser = optim.Adam(model.parameters(), lr=self.lr)
+        
+    def train_step(self, state, action, reward, next_state, done):
+        # initialize all the parameters as tensors
+        self.state = torch.tensor(state, dtype=torch.float)
+        self.next_state = torch.tensor(next_state, dtype=torch.float)
+        self.action = torch.tensor(action, dtype=torch.long)
+        self.reward = torch.tensor(reward, dtype=torch.float)
+
+
+        # Check size of training data (as it can be single or in a batch)
+        # Shape of tensor should be in form (n, x), n = #number of batches, x = # amount of data in each batch
+        # If a single set is used, len of the tensor shape will be 1, so check this.
+        if len(self.state.shape) == 1:
+            # Need to add a (empty) dimension to each tensor to fit into correct shape as batches are expected.
+            self.state = torch.unsqueeze(self.state, 0)
+            self.next_state = torch.unsqueeze(self.next_state, 0)
+            self.action = torch.unsqueeze(self.action, 0)
+            self.reward = torch.unsqueeze(self.reward, 0)
+            done = (done, )
+    
 
         
-

@@ -22,8 +22,8 @@ class Agent:
         self.dis_rate = 0.9 # This can be adjusted if necessary.
         self.memory = deque(maxlen=MAX_MEMORY)
 
-        # TODO: model, trainer
-        self.model = None
+        # Model: 8 inputs, 3 outputs. hidden layer size can be adjusted, right now set to 256.
+        self.model = LinQNetwork(8, 256, 3)
         self.trainer = Trainer(LR, self.dis_rate, self.model) 
         
 
@@ -96,7 +96,7 @@ class Agent:
             single_state = torch.tensor(state, dtype=torch.float) # setup tensor (MD array)
             # Use the model to make a prediction based on the current state
             # returns a tensor of "weights" for the given actions
-            prediction = self.model.predict(single_state) 
+            prediction = self.model(single_state) 
             # argmax returns a tensor, so get index with item() method.
             best_action_index = torch.argmax(prediction).item()
             action[best_action_index] = 1
