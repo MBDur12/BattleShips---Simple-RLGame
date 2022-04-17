@@ -29,6 +29,8 @@ class PaddleGame():
         self.height = height
         self.window = pygame.display.set_mode((self.width,self.height))
         self.clock = pygame.time.Clock()
+        pygame.time.set_timer(INCREMENT_SCORE, 1000)
+        pygame.time.set_timer(INCREASE_BALL_SPEED, 5000)
         pygame.display.set_caption("Paddle Ball")
 
         self.reset()
@@ -105,9 +107,9 @@ class PaddleGame():
 
     def _move_paddle(self, action):
         # Move left
-        if np.array_equal(action, [1,0,0]):
+        if np.array_equal(action, [1,0,0]) and self.paddle.x >= 0:
             self.paddle.x -= PADDLE_VELOCITY  
-        elif np.array_equal(action, [0,0,1]):
+        elif np.array_equal(action, [0,0,1]) and self.paddle.x + self.paddle.width <= self.width:
             self.paddle.x += PADDLE_VELOCITY
 
     def _handle_collision(self):
@@ -149,7 +151,7 @@ def main():
             #game.display_loss()
             break
 
-    print(f"Score: {score}")
+    print(f"Score: {game.score}")
     """if game_over:
         main()
     else:"""

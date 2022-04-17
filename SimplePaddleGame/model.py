@@ -61,21 +61,21 @@ class Trainer():
             done = (done, )
 
         # Make prediction based on the model
-        prediction = self.model(state)
+        prediction = self.model(self.state)
 
         target = prediction.clone()
 
         for idx in range(len(done)):
-            Q_new = reward[idx]
+            Q_new = self.reward[idx]
             if not done[idx]:
-                Q_new = reward[idx] + self.disc_rate * torch.max(self.model(self.next_state))
+                Q_new = self.reward[idx] + self.disc_rate * torch.max(self.model(self.next_state))
 
             target[idx][torch.argmax(self.action).item()] = Q_new
 
         # resets all neuron gradients to zero, 
         # calculates loss (mean squared error) and back propogates
         self.optimiser.zero_grad()
-        loss = self.loss
+        loss = self.loss(target, prediction)
         loss.backward()
 
         self.optimiser.step()
