@@ -3,7 +3,7 @@ import random
 import numpy as np
 from collections import deque
 from AIgame import PaddleGame
-
+from model import LinQNetwork, Trainer
 # Game Parameters
 WIDTH, HEIGHT = 450, 500
 # Adjust these parameters to modify exploration vs. exploitation
@@ -23,8 +23,8 @@ class Agent:
         self.memory = deque(maxlen=MAX_MEMORY)
 
         # TODO: model, trainer
-        self.model = None 
-        self.trainer = None 
+        self.model = None
+        self.trainer = Trainer(LR, self.dis_rate, self.model) 
         
 
     def get_state(self, game):
