@@ -24,7 +24,7 @@ class Agent:
         self.memory = deque(maxlen=MAX_MEMORY)
 
         # Model: 8 inputs, 3 outputs. hidden layer size can be adjusted, right now set to 256.
-        self.model = LinQNetwork(8, 256, 3)
+        self.model = LinQNetwork(19, 256, 3)
         self.trainer = Trainer(LR, self.dis_rate, self.model) 
         
 
@@ -37,12 +37,26 @@ class Agent:
         down_dir = game.ball_speed[1] > 0
 
         # Determine position of the ball relative to the paddle [a,b] -> [left,middle,right]
-        ball_is_left = game.ball.x <= game.paddle.x
+        ball_paddle_diff_left = game.ball.x - game.paddle.x
+        ball_paddle_diff_right = game.ball.x - (game.paddle.x + game.paddle.width)
+        max_diff = (WIDTH - game.paddle.width)
+        ball_is_left_far = ball_paddle_diff_left < 0 and abs(ball_paddle_diff_left) <= max_diff and abs(ball_paddle_diff_left) > max_diff // 2
+        ball_is_left_close = ball_paddle_diff_left < 0 and abs(ball_paddle_diff_left) <= max_diff // 2 and abs(ball_paddle_diff_left) > 0
         ball_in_middle = (game.ball.x >= game.paddle.x and game.ball.x <= game.paddle.x + game.paddle.width)
-        ball_is_right = game.ball.x >= game.paddle.x + game.paddle.width
+        ball_is_right_far = ball_paddle_diff_right > 0 and ball_paddle_diff_right < max_diff and ball_paddle_diff_right > max_diff // 2
+        ball_is_right_close = ball_paddle_diff_right > 0 and ball_paddle_diff_right < max_diff // 2 and ball_paddle_diff_right > 0
 
-        # Model the height of the ball by considering screen in halves [0] = top-half, [1] = bottom-half
-        screen_half = game.ball.y >= game.width//2
+        # Model the height of the ball by considering screen in ten division
+        top_one = game.ball.y <= game.height // 10 and game.ball.y > 0
+        top_two = game.ball.y <= 2 * (game.height // 10) and game.ball.y > game.height // 10
+        top_three = game.ball.y <= 3 * (game.height // 10) and game.ball.y > 2 * (game.height // 10)
+        top_four = game.ball.y <= 4 * (game.height // 10) and game.ball.y >  3 * (game.height // 10)
+        top_five = game.ball.y <= 5 * (game.height // 10) and game.ball.y >  4 * (game.height // 10)
+        top_six = game.ball.y <=  6 * (game.height // 10) and game.ball.y >  5 * (game.height // 10)
+        top_seven = game.ball.y <= 7 * (game.height // 10) and game.ball.y > 6 * (game.height // 10)
+        top_eight = game.ball.y <= 8 * (game.height // 10) and game.ball.y > 7 * (game.height // 10)
+        top_nine  = game.ball.y <= 9 * (game.height // 10) and game.ball.y > 8 * (game.height // 10)
+        top_ten   = game.ball.y <= 10 * (game.height // 10) and game.ball.y > 9 * (game.height // 10)
 
         state = [
         left_dir,
@@ -50,11 +64,22 @@ class Agent:
         up_dir,
         down_dir, 
         
-        ball_is_left,
+        ball_is_left_far,
+        ball_is_left_close,
         ball_in_middle,
-        ball_is_right, 
+        ball_is_right_far,
+        ball_is_right_close, 
         
-        screen_half]    
+        top_one, 
+        top_two, 
+        top_three, 
+        top_four, 
+        top_five, 
+        top_six, 
+        top_seven, 
+        top_eight, 
+        top_nine, 
+        top_ten]    
 
         # Convert state to an array of 0s and 1s.
         return np.array(state, dtype=int)
@@ -104,7 +129,7 @@ class Agent:
             
 
         # Decay exploration rate: decreases expontentially as number of games played increases.
-        self.exp_rate = MIN_EXP_RATE + (MAX_EXP_RATE - MIN_EXP_RATE) * np.exp(-EXP_DECAY_RATE * 2 * self.game_count)
+        self.exp_rate = MIN_EXP_RATE + (MAX_EXP_RATE - MIN_EXP_RATE) * np.exp(-EXP_DECAY_RATE * 4 * self.game_count)
 
 
         return action
@@ -144,7 +169,7 @@ def train():
                 record = score
                 agent.model.save()
 
-            print(f"Game: {agent.game_count}, Score: {score}, Record: {record}")
+            print(f"Game: {agent.game_count}, Score: {score}, Record: {record}, Mean Score: {total_score / agent.game_count}")
 
             # TODO: plot data
             plot_scores.append(score)

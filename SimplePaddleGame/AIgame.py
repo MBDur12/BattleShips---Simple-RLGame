@@ -51,7 +51,7 @@ class PaddleGame():
         self.score = 0
     
     def _set_ball_pos(self):
-        start_x, start_y = randint(0, WIDTH), randint(0, HEIGHT//4)
+        start_x, start_y = randint(5, WIDTH), 5
         return start_x, start_y
 
 
@@ -70,9 +70,18 @@ class PaddleGame():
                 self.ball_speed = [1.1*val for val in self.ball_speed]
         
         reward = 0
+        old_distance = (abs(self.ball.x - (self.paddle.x + self.paddle.width // 2)) ** 2 + abs(self.ball.y - self.paddle.y) ** 2) ** (1/2)
         #2 make a move based on this information
         self._handle_ball()
         self._move_paddle(action)
+        new_distance = (abs(self.ball.x - (self.paddle.x + self.paddle.width // 2)) ** 2 + abs(self.ball.y - self.paddle.y) ** 2) ** (1/2)
+
+        # if paddle is closer to ball reward +3, otherwise reward -3
+        if old_distance < new_distance:
+            reward -= 3
+        else:
+            reward += 3
+
         #3 check if game is over (paddle missed)
         game_over = self._is_game_over()
         if game_over:
