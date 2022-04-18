@@ -16,7 +16,7 @@ PADDLE_VELOCITY = 4
 # Ball to keep up
 BALL_WIDTH, BALL_HEIGHT = 20, 40
 # Define custom events to call
-INCREMENT_SCORE = pygame.USEREVENT + 1 # event to call every second to update the score count
+HIT_PADDLE = pygame.USEREVENT + 1 # event to call every second to update the score count
 INCREASE_BALL_SPEED = pygame.USEREVENT + 2
 # Define colours
 BLACK = (0, 0 ,0)
@@ -29,7 +29,6 @@ class PaddleGame():
         self.height = height
         self.window = pygame.display.set_mode((self.width,self.height))
         self.clock = pygame.time.Clock()
-        pygame.time.set_timer(INCREMENT_SCORE, 1000)
         pygame.time.set_timer(INCREASE_BALL_SPEED, 5000)
         pygame.display.set_caption("Paddle Ball")
 
@@ -63,8 +62,8 @@ class PaddleGame():
                 quit()
                 
             
-            if event.type == INCREMENT_SCORE:
-                self.score += 5
+            if event.type == HIT_PADDLE:
+                self.score += 10
 
             if event.type == INCREASE_BALL_SPEED:
                 self.ball_speed = [1.1*val for val in self.ball_speed]
@@ -126,6 +125,7 @@ class PaddleGame():
         self.ball.x <= self.paddle.x + PADDLE_WIDTH and 
         self.ball.y >= HEIGHT - 20 - PADDLE_HEIGHT):
             self.ball_speed[1] = -self.ball_speed[1]
+            pygame.event.post(pygame.event.Event(HIT_PADDLE))
             return True
         
         return False

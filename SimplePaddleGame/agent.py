@@ -129,7 +129,7 @@ class Agent:
             
 
         # Decay exploration rate: decreases expontentially as number of games played increases.
-        self.exp_rate = MIN_EXP_RATE + (MAX_EXP_RATE - MIN_EXP_RATE) * np.exp(-EXP_DECAY_RATE * 4 * self.game_count)
+        self.exp_rate = MIN_EXP_RATE + (MAX_EXP_RATE - MIN_EXP_RATE) * np.exp(-EXP_DECAY_RATE*self.game_count)
 
 
         return action
