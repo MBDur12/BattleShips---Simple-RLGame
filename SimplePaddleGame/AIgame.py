@@ -11,10 +11,10 @@ FPS = 60
 SCORE_FONT = pygame.font.SysFont("comicsans", 20)
 GAMEOVER_FONT = pygame.font.SysFont("comicsans", 80)
 # Player Paddle
-PADDLE_WIDTH, PADDLE_HEIGHT = 60, 10
-PADDLE_VELOCITY = 4
+PADDLE_WIDTH, PADDLE_HEIGHT = 50, 10
+PADDLE_VELOCITY = 5
 # Ball to keep up
-BALL_WIDTH, BALL_HEIGHT = 20, 40
+BALL_WIDTH, BALL_HEIGHT = 10, 5
 # Define custom events to call
 HIT_PADDLE = pygame.USEREVENT + 1 # event to call every second to update the score count
 INCREASE_BALL_SPEED = pygame.USEREVENT + 2
@@ -44,7 +44,7 @@ class PaddleGame():
         
         x,y = self._set_ball_pos()
         self.ball = pygame.Rect(x, y, BALL_WIDTH, BALL_HEIGHT)
-        self.ball_speed = [5,5]
+        self.ball_speed = [3,3]
 
 
         self.score = 0
@@ -69,17 +69,14 @@ class PaddleGame():
                 self.ball_speed = [1.1*val for val in self.ball_speed]
         
         reward = 0
-        old_distance = (abs(self.ball.x - (self.paddle.x + self.paddle.width // 2)) ** 2 + abs(self.ball.y - self.paddle.y) ** 2) ** (1/2)
+        if np.array_equal(action, [1,0,0]) or np.array_equal(action, [0,0,1]):
+            reward -= 0.1
         #2 make a move based on this information
         self._handle_ball()
         self._move_paddle(action)
-        new_distance = (abs(self.ball.x - (self.paddle.x + self.paddle.width // 2)) ** 2 + abs(self.ball.y - self.paddle.y) ** 2) ** (1/2)
 
         # if paddle is closer to ball reward +3, otherwise reward -3
-        if old_distance < new_distance:
-            reward -= 3
-        else:
-            reward += 3
+
 
         #3 check if game is over (paddle missed)
         game_over = self._is_game_over()
@@ -121,9 +118,7 @@ class PaddleGame():
             self.paddle.x += PADDLE_VELOCITY
 
     def _handle_collision(self):
-        if (self.ball.x >= self.paddle.x and 
-        self.ball.x <= self.paddle.x + PADDLE_WIDTH and 
-        self.ball.y >= HEIGHT - 20 - PADDLE_HEIGHT):
+        if self.ball.colliderect(self.paddle):
             self.ball_speed[1] = -self.ball_speed[1]
             pygame.event.post(pygame.event.Event(HIT_PADDLE))
             return True

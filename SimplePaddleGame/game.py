@@ -12,10 +12,10 @@ FPS = 60
 SCORE_FONT = pygame.font.SysFont("comicsans", 20)
 GAMEOVER_FONT = pygame.font.SysFont("comicsans", 80)
 # Player Paddle
-PADDLE_WIDTH, PADDLE_HEIGHT = 60, 10
+PADDLE_WIDTH, PADDLE_HEIGHT = 50, 10
 PADDLE_VELOCITY = 4
 # Ball to keep up
-BALL_WIDTH, BALL_HEIGHT = 20, 40
+BALL_WIDTH, BALL_HEIGHT = 10, 5
 # Define custom events to call
 HIT_PADDLE = pygame.USEREVENT + 1 # event to call every second to update the score count
 INCREASE_BALL_SPEED = pygame.USEREVENT + 2
@@ -39,7 +39,7 @@ class PaddleGame():
         
         x,y = self._set_ball_pos()
         self.ball = pygame.Rect(x, y, BALL_WIDTH, BALL_HEIGHT)
-        self.ball_speed = [5,5]
+        self.ball_speed = [3,3]
 
         self.score = 0
 
@@ -64,7 +64,7 @@ class PaddleGame():
                 self.score += 10
 
             if event.type == INCREASE_BALL_SPEED:
-                self.ball_speed = [1.1*val for val in self.ball_speed]
+                self.ball_speed = [1.01*val for val in self.ball_speed]
         #2 make a move based on this information
         self._handle_ball()
         self.keys_pressed = pygame.key.get_pressed()
@@ -105,11 +105,9 @@ class PaddleGame():
         if self.keys_pressed[pygame.K_RIGHT] and self.paddle.x + PADDLE_VELOCITY + PADDLE_WIDTH < WIDTH:
             self.paddle.x += PADDLE_VELOCITY
 
-    def _handle_collision(self):
-        if (self.ball.x >= self.paddle.x and 
-        self.ball.x <= self.paddle.x + PADDLE_WIDTH and 
-        self.ball.y >= HEIGHT - 20 - PADDLE_HEIGHT):
-
+    def _handle_collision(self): 
+        if self.ball.colliderect(self.paddle):
+            print(f"paddle.y {self.paddle.y}, ball.y {self.ball.y}")
             self.ball_speed[1] = -self.ball_speed[1]
             pygame.event.post(pygame.event.Event(HIT_PADDLE))
 
