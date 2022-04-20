@@ -11,8 +11,8 @@ FPS = 60
 SCORE_FONT = pygame.font.SysFont("comicsans", 20)
 GAMEOVER_FONT = pygame.font.SysFont("comicsans", 80)
 # Player Paddle
-PADDLE_WIDTH, PADDLE_HEIGHT = 50, 10
-PADDLE_VELOCITY = 5
+PADDLE_WIDTH, PADDLE_HEIGHT = 60, 10
+PADDLE_VELOCITY = 7
 # Ball to keep up
 BALL_WIDTH, BALL_HEIGHT = 10, 5
 # Define custom events to call
@@ -70,7 +70,7 @@ class PaddleGame():
         
         reward = 0
         if np.array_equal(action, [1,0,0]) or np.array_equal(action, [0,0,1]):
-            reward -= 0.1
+            reward -= 1
         #2 make a move based on this information
         self._handle_ball()
         self._move_paddle(action)

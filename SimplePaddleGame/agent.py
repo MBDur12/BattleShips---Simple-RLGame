@@ -4,7 +4,7 @@ import numpy as np
 from collections import deque
 from AIgame import PaddleGame
 from model import LinQNetwork, Trainer
-from helper import plot
+#from helper import plot
 # Game Parameters
 WIDTH, HEIGHT = 450, 500
 # Adjust these parameters to modify exploration vs. exploitation
@@ -129,7 +129,7 @@ def train():
             total_score += score
             mean_score = total_score / agent.game_count
             plot_mean_scores.append(mean_score)
-            plot(plot_scores, plot_mean_scores)
+            #plot(plot_scores, plot_mean_scores)
 
 
     
