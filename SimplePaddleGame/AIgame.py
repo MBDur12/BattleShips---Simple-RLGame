@@ -16,7 +16,7 @@ PADDLE_VELOCITY = 4
 # Ball to keep up
 BALL_WIDTH, BALL_HEIGHT = 20, 40
 # Define custom events to call
-INCREMENT_SCORE = pygame.USEREVENT + 1 # event to call every second to update the score count
+HIT_PADDLE = pygame.USEREVENT + 1 # event to call every second to update the score count
 INCREASE_BALL_SPEED = pygame.USEREVENT + 2
 # Define colours
 BLACK = (0, 0 ,0)
@@ -41,7 +41,7 @@ class PaddleGame():
         
         x,y = self._set_ball_pos()
         self.ball = pygame.Rect(x, y, BALL_WIDTH, BALL_HEIGHT)
-        self.ball_speed = [5,5]
+        self.ball_speed = [3,3]
 
 
         self.score = 0
@@ -59,13 +59,17 @@ class PaddleGame():
                 quit()
                 
             
-            if event.type == INCREMENT_SCORE:
+            if event.type == HIT_PADDLE:
                 self.score += 5
 
             if event.type == INCREASE_BALL_SPEED:
-                self.ball_speed = [1.1*val for val in self.ball_speed]
+                self.ball_speed = [1.01*val for val in self.ball_speed]
         
         reward = 0
+        # Punish random actions
+        if np.array_equal(action, [1,0,0]) or np.array_equal(action, [0,0,1]):
+            reward -= 0.1
+
         #2 make a move based on this information
         self._handle_ball()
         self._move_paddle(action)
@@ -110,8 +114,8 @@ class PaddleGame():
 
     def _handle_collision(self):
         if (self.ball.x >= self.paddle.x and 
-        self.ball.x <= self.paddle.x + PADDLE_WIDTH and 
-        self.ball.y >= HEIGHT - 20 - PADDLE_HEIGHT):
+        self.ball.x < self.paddle.x + PADDLE_WIDTH and 
+        self.ball.y >= HEIGHT - PADDLE_HEIGHT):
             self.ball_speed[1] = -self.ball_speed[1]
             return True
         
