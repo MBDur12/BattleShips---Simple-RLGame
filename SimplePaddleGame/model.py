@@ -1,4 +1,3 @@
-from re import S
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -42,7 +41,7 @@ class Trainer():
         
     def train_step(self, state, action, reward, next_state, done):
         # initialize all the parameters as tensors
-        self.state = torch.tensor(state, dtype=torch.float)
+        self.state = torch.from_numpy(state, dtype=torch.float)
         self.next_state = torch.tensor(next_state, dtype=torch.float)
         self.action = torch.tensor(action, dtype=torch.long)
         self.reward = torch.tensor(reward, dtype=torch.float)

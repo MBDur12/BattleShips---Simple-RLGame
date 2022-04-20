@@ -24,65 +24,18 @@ class Agent:
         self.memory = deque(maxlen=MAX_MEMORY)
 
         # Model: 8 inputs, 3 outputs. hidden layer size can be adjusted, right now set to 256.
-        self.model = LinQNetwork(19, 256, 3)
+        self.model = LinQNetwork(5, 256, 3)
         self.trainer = Trainer(LR, self.dis_rate, self.model) 
         
 
     def get_state(self, game):
-        # state = [direction of ball L,R,U,D + ball L, R + ball Y-distance]
-        # Convert ball_speed vector [a,b] into a Boolean representation of directions [-a,a,-b,b] -> [left,right,up,down]
-        left_dir = game.ball_speed[0] < 0
-        right_dir = game.ball_speed[0] > 0
-        up_dir = game.ball_speed[1] < 0 
-        down_dir = game.ball_speed[1] > 0
+        paddle_x = game.paddle.x
+        ball_x = game.ball.x
+        ball_y = game.ball.y
+        ball_dx, ball_dy = game.ball_speed
 
-        # Determine position of the ball relative to the paddle [a,b] -> [left,middle,right]
-        ball_paddle_diff_left = game.ball.x - game.paddle.x
-        ball_paddle_diff_right = game.ball.x - (game.paddle.x + game.paddle.width)
-        max_diff = (WIDTH - game.paddle.width)
-        ball_is_left_far = ball_paddle_diff_left < 0 and abs(ball_paddle_diff_left) <= max_diff and abs(ball_paddle_diff_left) > max_diff // 2
-        ball_is_left_close = ball_paddle_diff_left < 0 and abs(ball_paddle_diff_left) <= max_diff // 2 and abs(ball_paddle_diff_left) > 0
-        ball_in_middle = (game.ball.x >= game.paddle.x and game.ball.x <= game.paddle.x + game.paddle.width)
-        ball_is_right_far = ball_paddle_diff_right > 0 and ball_paddle_diff_right < max_diff and ball_paddle_diff_right > max_diff // 2
-        ball_is_right_close = ball_paddle_diff_right > 0 and ball_paddle_diff_right < max_diff // 2 and ball_paddle_diff_right > 0
-
-        # Model the height of the ball by considering screen in ten division
-        top_one = game.ball.y <= game.height // 10 and game.ball.y > 0
-        top_two = game.ball.y <= 2 * (game.height // 10) and game.ball.y > game.height // 10
-        top_three = game.ball.y <= 3 * (game.height // 10) and game.ball.y > 2 * (game.height // 10)
-        top_four = game.ball.y <= 4 * (game.height // 10) and game.ball.y >  3 * (game.height // 10)
-        top_five = game.ball.y <= 5 * (game.height // 10) and game.ball.y >  4 * (game.height // 10)
-        top_six = game.ball.y <=  6 * (game.height // 10) and game.ball.y >  5 * (game.height // 10)
-        top_seven = game.ball.y <= 7 * (game.height // 10) and game.ball.y > 6 * (game.height // 10)
-        top_eight = game.ball.y <= 8 * (game.height // 10) and game.ball.y > 7 * (game.height // 10)
-        top_nine  = game.ball.y <= 9 * (game.height // 10) and game.ball.y > 8 * (game.height // 10)
-        top_ten   = game.ball.y <= 10 * (game.height // 10) and game.ball.y > 9 * (game.height // 10)
-
-        state = [
-        left_dir,
-        right_dir,
-        up_dir,
-        down_dir, 
-        
-        ball_is_left_far,
-        ball_is_left_close,
-        ball_in_middle,
-        ball_is_right_far,
-        ball_is_right_close, 
-        
-        top_one, 
-        top_two, 
-        top_three, 
-        top_four, 
-        top_five, 
-        top_six, 
-        top_seven, 
-        top_eight, 
-        top_nine, 
-        top_ten]    
-
-        # Convert state to an array of 0s and 1s.
-        return np.array(state, dtype=int)
+        state = np.interp([paddle_x, ball_x, ball_y, ball_dx, ball_dy], [0, 500], [-1,1])
+        return state
 
     def remember(self, state, action, reward, next_state, done):
         # add parameters into memory. If max capacity is reached, it pops from the left (oldest entry)
