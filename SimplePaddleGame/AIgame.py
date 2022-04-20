@@ -16,7 +16,7 @@ PADDLE_VELOCITY = 4
 # Ball to keep up
 BALL_WIDTH, BALL_HEIGHT = 20, 40
 # Define custom events to call
-INCREMENT_SCORE = pygame.USEREVENT + 1 # event to call every second to update the score count
+HIT_PADDLE = pygame.USEREVENT + 1 # event to call every second to update the score count
 INCREASE_BALL_SPEED = pygame.USEREVENT + 2
 # Define colours
 BLACK = (0, 0 ,0)
@@ -24,9 +24,12 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
 class PaddleGame():
-    def __init__(self):
-        self.window = pygame.display.set_mode((WIDTH, HEIGHT))
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.window = pygame.display.set_mode((self.width,self.height))
         self.clock = pygame.time.Clock()
+        pygame.time.set_timer(INCREASE_BALL_SPEED, 5000)
         pygame.display.set_caption("Paddle Ball")
 
         self.reset()
@@ -47,7 +50,7 @@ class PaddleGame():
         self.score = 0
     
     def _set_ball_pos(self):
-        start_x, start_y = randint(0, WIDTH), randint(0, HEIGHT//4)
+        start_x, start_y = randint(5, WIDTH), 5
         return start_x, start_y
 
 
@@ -59,16 +62,25 @@ class PaddleGame():
                 quit()
                 
             
-            if event.type == INCREMENT_SCORE:
-                self.score += 5
+            if event.type == HIT_PADDLE:
+                self.score += 10
 
             if event.type == INCREASE_BALL_SPEED:
                 self.ball_speed = [1.1*val for val in self.ball_speed]
         
         reward = 0
+        old_distance = (abs(self.ball.x - (self.paddle.x + self.paddle.width // 2)) ** 2 + abs(self.ball.y - self.paddle.y) ** 2) ** (1/2)
         #2 make a move based on this information
         self._handle_ball()
         self._move_paddle(action)
+        new_distance = (abs(self.ball.x - (self.paddle.x + self.paddle.width // 2)) ** 2 + abs(self.ball.y - self.paddle.y) ** 2) ** (1/2)
+
+        # if paddle is closer to ball reward +3, otherwise reward -3
+        if old_distance < new_distance:
+            reward -= 3
+        else:
+            reward += 3
+
         #3 check if game is over (paddle missed)
         game_over = self._is_game_over()
         if game_over:
@@ -103,9 +115,9 @@ class PaddleGame():
 
     def _move_paddle(self, action):
         # Move left
-        if np.array_equal(action, [1,0,0]):
+        if np.array_equal(action, [1,0,0]) and self.paddle.x >= 0:
             self.paddle.x -= PADDLE_VELOCITY  
-        elif np.array_equal(action, [0,0,1]):
+        elif np.array_equal(action, [0,0,1]) and self.paddle.x + self.paddle.width <= self.width:
             self.paddle.x += PADDLE_VELOCITY
 
     def _handle_collision(self):
@@ -113,6 +125,7 @@ class PaddleGame():
         self.ball.x <= self.paddle.x + PADDLE_WIDTH and 
         self.ball.y >= HEIGHT - 20 - PADDLE_HEIGHT):
             self.ball_speed[1] = -self.ball_speed[1]
+            pygame.event.post(pygame.event.Event(HIT_PADDLE))
             return True
         
         return False
@@ -134,7 +147,7 @@ class PaddleGame():
     
 
 def main():
-    game = PaddleGame()
+    game = PaddleGame(WIDTH, HEIGHT)
 
     pygame.time.set_timer(INCREMENT_SCORE, 1000)
     pygame.time.set_timer(INCREASE_BALL_SPEED, 5000)
@@ -147,7 +160,7 @@ def main():
             #game.display_loss()
             break
 
-    print(f"Score: {score}")
+    print(f"Score: {game.score}")
     """if game_over:
         main()
     else:"""
